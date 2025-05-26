@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "frontend.domain.url",
+    "type": "java.lang.String",
+    "description": "A description for 'frontend.domain.url'"
+  },
+  {
+    "name": "spring.security.jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.security.jwt.secret'"
+  },
+  {
+    "name": "spring.security.jwt.expiration",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.security.jwt.expiration'"
+  }
+]}

@@ -1,0 +1,30 @@
+kafka:
+  topics:
+    produced:
+      - name: user.otp.requested
+        partitions: 1
+        replication-factor: 1
+        config:
+          retention.ms: 604800000 
+      - name: user.account.locked
+        partitions: 1
+        replication-factor: 1
+        config:
+          retention.ms: 604800000 
+      - name: user.otp.requested
+        partitions: 1
+        replication-factor: 1
+        config:
+          retention.ms: 604800000
+
+    consumed:
+      - name: ser.otp.requested
+        group-id: ms-user
+        auto-offset-reset: earliest
+        config:
+          retention.ms: 604800000 
+      - name: user.account.locked
+        group-id: ms-user
+        auto-offset-reset: earliest
+        config:
+          retention.ms: 604800000

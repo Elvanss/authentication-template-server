@@ -1,0 +1,14 @@
+server:
+  port: 8761
+  servlet:
+    context-path: /eureka
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    prefer-ip-address: true
+  server:
+    enable-self-preservation: true
+    eviction-interval-timer-in-ms: 10000

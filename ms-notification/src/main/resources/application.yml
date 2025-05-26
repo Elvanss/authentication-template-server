@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: ms-notification
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: notification-group
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: duy.elvans12@gmail.com
+    password: ezgsfswusbafhemh
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8082
+  servlet:
+    context-path: /notification-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

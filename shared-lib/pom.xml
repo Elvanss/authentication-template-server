@@ -18,15 +18,20 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.3.22</version> <!-- Use the version compatible with your project -->
+        </dependency>
         <!-- Add dependencies needed for your DTOs and utilities -->
         <!-- e.g. Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
+            <version>1.18.28</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
@@ -35,9 +40,4 @@
         </dependency>
   </dependencies>
 </project>
-<!-- Calling in another services -->
-<!-- <dependency>
-    <groupId>com.template.shared</groupId>
-    <artifactId>shared-lib</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-</dependency> -->
+

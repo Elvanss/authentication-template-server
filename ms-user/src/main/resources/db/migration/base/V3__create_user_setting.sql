@@ -1,0 +1,11 @@
+CREATE TABLE "user_settings" (
+    user_id UUID PRIMARY KEY,
+    is_email_verified BOOLEAN DEFAULT FALSE,
+    is_phone_verified BOOLEAN DEFAULT FALSE,
+    is_account_locked BOOLEAN DEFAULT FALSE,
+    language VARCHAR(10),
+    dark_mode BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(30) NOT NULL DEFAULT 'PENDING_VERIFICATION'
+);

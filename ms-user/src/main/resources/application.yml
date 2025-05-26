@@ -1,0 +1,77 @@
+# management:
+#     info:
+#         git:
+#             mode: full
+#         env:
+#             enabled: true
+server:
+  port: 8081
+  servlet:
+    context-path: /user-service
+
+spring:
+  application:
+    name: ms-user
+  flyway:
+    locations: classpath:db/migration/base/
+    baseline-on-migrate: true
+    enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms-user
+    username: postgres
+    password: 
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        # dialect: org.hibernate.dialect.PostgreSQLDialect
+        ddl-auto: none
+        open-in-view: false
+  security:
+    jwt:
+      secret: xxdWXHtgXeXs0vaLSRjrORGDZvuRSoRHEOc43IyiLl6YOOjTW5U11Ae0fRA0vyeAHqOvepKwiHTkB/dLZP+ESw== # base64 secret
+      expiration: 43200000 # in milliseconds (12 hours)
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  config:
+    import: "optional:kafka-topics.yml"
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+
+frontend:
+  domain:
+    url: http://localhost:3000
+
+logging:
+  level:
+    '[com.auth.ms_user.client.OtpServiceClient]': DEBUG
+    feign: DEBUG
+    com.netflix.discovery: DEBUG
+    org.springframework.cloud.netflix.eureka: DEBUG
+
+domain:
+  service:
+    ms-user:
+      name: ms-user
+      url: http://localhost:8081/user-service
+    ms-notification:
+      name: ms-notification
+      url: http://localhost:8082/notification-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
