@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DiscoveryApplication<discovery>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.auth.discovery.DiscoveryApplication",
+            "projectName": "discovery",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-GatewayApplication<gateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.auth.gateway.GatewayApplication",
+            "projectName": "gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsNotificationApplication<ms-notification>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.auth.ms_notification.MsNotificationApplication",
+            "projectName": "ms-notification",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsUserApplication<ms-user>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.auth.ms_user.MsUserApplication",
+            "projectName": "ms-user",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

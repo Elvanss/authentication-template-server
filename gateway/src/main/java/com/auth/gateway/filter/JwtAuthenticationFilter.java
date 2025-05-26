@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 // @Component
 public class JwtAuthenticationFilter implements GatewayFilter {
+
     private final JwtUtils jwtUtils;
 
     // Constructor to inject the JwtUtil dependency

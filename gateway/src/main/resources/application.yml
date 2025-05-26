@@ -12,3 +12,7 @@ spring:
       httpclient:
         connect-timeout: 60000
         response-timeout: 60s
+  security:
+    jwt:
+      secret: xxdWXHtgXeXs0vaLSRjrORGDZvuRSoRHEOc43IyiLl6YOOjTW5U11Ae0fRA0vyeAHqOvepKwiHTkB/dLZP+ESw==
+      expiration: 43200000

@@ -32,8 +32,8 @@ public class JwtService {
 
     private final KeyPair keyPair;
 
-    @Value("${spring.security.jwt.secret}")
-    private String secret;
+    // @Value("${spring.security.jwt.secret}")
+    // private String secret;
 
     @Value("${spring.security.jwt.expiration}")
     private long expiration;

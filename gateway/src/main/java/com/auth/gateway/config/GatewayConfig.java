@@ -3,16 +3,15 @@ package com.auth.gateway.config;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.auth.gateway.filter.JwtAuthenticationFilter;
 
 
-@Configuration
+// @Configuration
 public class GatewayConfig {
+
     private final JwtAuthenticationFilter filter;
 
-    // Constructor to inject the JwtAuthenticationFilter dependency
     public GatewayConfig(JwtAuthenticationFilter filter) {
         this.filter = filter;
     }

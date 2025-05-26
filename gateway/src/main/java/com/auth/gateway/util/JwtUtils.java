@@ -1,8 +1,7 @@
 package com.auth.gateway.util;
 
-import java.security.NoSuchAlgorithmException;
+import java.security.KeyFactory;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
@@ -14,31 +13,34 @@ import io.jsonwebtoken.Jwts;
 // @Component
 public class JwtUtils {
 
-    @Value("${spring.security.jwt.public-key}")
-    private String publicKeyString; // Public key as a Base64-encoded string
+    private final PublicKey publicKey;
+
+    public JwtUtils(@Value("${spring.security.jwt.public-key}") String publicKeyString) {
+        this.publicKey = loadPublicKey(publicKeyString);
+    }
+
+    /**
+     * Converts the Base64-encoded public key string into a PublicKey object.
+     */
+    private PublicKey loadPublicKey(String publicKeyString) {
+        try {
+            byte[] keyBytes = Base64.getDecoder().decode(publicKeyString);
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+            return KeyFactory.getInstance("RSA").generatePublic(spec);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load public key", e);
+        }
+    }
 
     /**
      * Parses the JWT token and retrieves all claims.
      */
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-                .verifyWith(getPublicKey()) // Use the public key for verification
+                .verifyWith(publicKey) // Use the public key for verification
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    /**
-     * Converts the Base64-encoded public key string into a PublicKey object.
-     */
-    private PublicKey getPublicKey() {
-        try {
-            byte[] keyBytes = Base64.getDecoder().decode(publicKeyString);
-            X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
-            return java.security.KeyFactory.getInstance("RSA").generatePublic(spec);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException("Failed to load public key", e);
-        }
     }
 
     /**
