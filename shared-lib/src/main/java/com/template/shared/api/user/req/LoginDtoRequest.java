@@ -4,6 +4,7 @@ public class LoginDtoRequest {
     private String email;
     private String password;
 
+    public LoginDtoRequest() {}
 
     public LoginDtoRequest(String email, String password) {
         this.email = email;

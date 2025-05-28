@@ -19,7 +19,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/ms-user
     username: postgres
-    password: 
+    password: 0309
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
@@ -37,6 +37,15 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  cloud:
+    vault:
+      uri: http://127.0.0.1:8200
+      token: hvs.EMdr7fcLZSBBycoYwhofyBkS
+      scheme: http
+      kv:
+        enabled: true
+        backend: secret
+        default-context: application
   config:
     import: "optional:kafka-topics.yml"
 

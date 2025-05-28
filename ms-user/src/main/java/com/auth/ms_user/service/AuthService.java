@@ -56,48 +56,6 @@ public class AuthService {
     private final KafkaTopicsConfig kafkaTopicsConfig;
     private final OtpServiceClient otpServiceClient;
 
-    // @Transactional
-    // public ApiResponse<OtpRequestEvent> userLogin(LoginDtoRequest loginDtoReq) {
-    //     User authenticatedUser = authenticate(loginDtoReq);
-    
-    //     if (authenticatedUser == null) {
-    //         return new ApiResponse<>(false, "No Account found!", null);
-    //     }
-    
-    //      if (authenticatedUser.isLocked()) {
-    //         logger.warn("Account is locked for user with email: {}", authenticatedUser.getEmail());
-        
-    //         OtpRequestEvent accountLockedEvent = buildOtpRequestEvent(authenticatedUser);
-        
-    //         try {
-    //             otpKafkaProducer.sendMessage(accountLockedEvent, kafkaTopicsConfig.getProducedTopic("user.account.locked").getName());
-    //             logger.info("Account locked event sent to Kafka for user: {}", authenticatedUser.getEmail());
-    //         } catch (Exception e) {
-    //             logger.error("Failed to send account locked event to Kafka for user: {}", authenticatedUser.getEmail(), e);
-    //             return new ApiResponse<>(false, "Failed to process account-locked event", null);
-    //         }
-        
-    //         return new ApiResponse<>(false, "This account is locked!", accountLockedEvent);
-    //     }
-    
-    //     if (!passwordEncoder.matches(loginDtoReq.getPassword(), authenticatedUser.getPassword())) {
-    //         if (handleFailedAttempts(authenticatedUser)) {
-    //             return new ApiResponse<>(false, "Account is locked", null);
-    //         }
-    //         return new ApiResponse<>(false, "You entered the wrong password or email!", null);
-    //     }
-    
-    //     logger.info("Quick check user with account id: {} and user name {}", 
-    //             authenticatedUser.getUserId(), 
-    //             authenticatedUser.getEmail()
-    //     );
-    
-    //     OtpRequestEvent otpRequestEvent = buildOtpRequestEvent(authenticatedUser);
-    //     otpKafkaProducer.sendMessage(otpRequestEvent, kafkaTopicsConfig.getProducedTopic("user.otp.requested").getName());
-    
-    //     return new ApiResponse<>(true, "User credentials returned!", otpRequestEvent);
-    // }
-
     @Transactional
     public ApiResponse<OtpRequestEvent> userLogin(LoginDtoRequest loginDtoReq) {
         User authenticatedUser = authenticate(loginDtoReq);

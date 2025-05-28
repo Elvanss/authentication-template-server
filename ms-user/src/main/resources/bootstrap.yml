@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: ms-user
+  cloud:
+    vault:
+      uri: http://localhost:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      authentication: TOKEN
+      kv:
+        enabled: true
+        backend: secret
+        default-context: ms-user
+      config:
+        lifecycle:
+          enabled: true
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health, info, refresh, env
+    endpoint:
+        env:
+            post:
+                enabled: true
+

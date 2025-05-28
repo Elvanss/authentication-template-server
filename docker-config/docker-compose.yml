@@ -17,11 +17,16 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
-    env_file:
-      - ./env/kafka.env
-    volumes:
-      - ./kafka/server.properties:/etc/kafka/server.properties
-    command: ["sh", "-c", "kafka-server-start /etc/kafka/server.properties"]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
 
   redis:
     image: redis:7.0.11
@@ -38,31 +43,29 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - ./env/postgres.env
+      - ./env/db.env
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-dbs.sh:ro
-      
-volumes:
-  postgres-data:
+      - ./init/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: my_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_PASSWORD: 0309
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
 
-# mailhog:
+  # mailhog:
   #   image: mailhog/mailhog
   #   container_name: mailhog
   #   ports:
   #     - "8025:8025"  # Web UI
   #     - "1025:1025"  # SMTP port
- 
-#  For user service:
-  # user-service:
-  #   build:
-  #     context: ../user-service
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8081:8081"
-  #   environment:
-  #     SPRING_PROFILES_ACTIVE: docker
-  #   depends_on:
-  #     - kafka
-  #     - redis
-  #     - postgres
+
+volumes:
+  postgres-data:
