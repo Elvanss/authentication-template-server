@@ -10,4 +10,8 @@ public class BlackListTokenService {
     
     @Autowired
     private BlacklistedTokenRepository blacklistedTokenRepository;
+    
+
+
+    
 }

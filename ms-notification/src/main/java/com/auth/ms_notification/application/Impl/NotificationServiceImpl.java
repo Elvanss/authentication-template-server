@@ -23,6 +23,12 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Async
+    /**
+     * Sends an OTP email to the user.
+     *
+     * @param to The recipient's email address.
+     * @param otp The OTP code to be sent.
+     */
     public void sendOtpEmail(String to, Integer otp) {  
         try {
             logger.info("Sending OTP to {}", to);
@@ -34,6 +40,27 @@ public class NotificationServiceImpl implements INotificationService {
             logger.info("OTP email sent successfully to {}", to);
         } catch (MailException e) {
             logger.error("Failed to send OTP email to {}: {}", to, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Async
+    /**
+     * Sends an email notification to the user when their account is locked.
+     *
+     * @param email The email address of the user whose account is locked.
+     */
+    public void sendLockedAccountEmail(String email) {
+        try {
+            logger.info("Sending account locked notification to {}", email);
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("Account Locked Notification");
+            message.setText("Your account has been locked due to multiple failed login attempts. Please contact support for assistance.");
+            javaMailSender.send(message);
+            logger.info("Account locked email sent successfully to {}", email);
+        } catch (MailException e) {
+            logger.error("Failed to send account locked email to {}: {}", email, e.getMessage(), e);
         }
     }
 }

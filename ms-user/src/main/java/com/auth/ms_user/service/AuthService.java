@@ -3,6 +3,7 @@ package com.auth.ms_user.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Description;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,8 +28,10 @@ import com.auth.ms_user.utils.constants.Role;
 import com.auth.ms_user.utils.constants.Status;
 import com.template.shared.api.ApiResponse;
 import com.template.shared.api.user.event.OtpRequestEvent;
+import com.template.shared.api.user.req.ChangePasswordRequest;
 import com.template.shared.api.user.req.LoginDtoRequest;
 import com.template.shared.api.user.req.VerifyOtpRequest;
+import com.template.shared.api.user.res.ChangePasswordResponse;
 import com.template.shared.api.user.res.LoginResponse;
 import com.template.shared.api.user.res.UserResponse;
 
@@ -136,6 +139,83 @@ public class AuthService {
             return new ApiResponse<>(false, "An unexpected error occurred", null);
         }
     }
+
+    @Async
+    @Transactional
+    public ApiResponse<ChangePasswordResponse> changePassword(ChangePasswordRequest changePasswordRequest) {
+        try {
+            // Step 1: Validate user existence
+            User user = userRepository.findById(changePasswordRequest.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    
+            // Step 2: Verify old password
+            if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+                user.incrementAttemptedCount();
+                userRepository.save(user); // Save attempted count
+                return new ApiResponse<>(
+                        false,
+                        "Old password is incorrect",
+                        new ChangePasswordResponse(false, user.getAttemptedCount())
+                );
+            }
+    
+            // Step 3: Validate new password and confirm password match
+            if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmPassword())) {
+                user.incrementAttemptedCount();
+                userRepository.save(user); // Save attempted count
+                return new ApiResponse<>(
+                        false,
+                        "New password and confirm password do not match",
+                        new ChangePasswordResponse(false, user.getAttemptedCount())
+                );
+            }
+    
+            // Step 4: Check password strength
+            if (!isPasswordStrong(changePasswordRequest.getNewPassword())) {
+                return new ApiResponse<>(
+                        false,
+                        "Password does not meet strength requirements",
+                        new ChangePasswordResponse(false, user.getAttemptedCount())
+                );
+            }
+    
+            // Step 5: Update password
+            user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+            user.resetAttemptedCount(); // Reset attempted count on success
+            userRepository.save(user);
+    
+            // Step 6: Send Kafka event (outside transaction)
+            sendAccountLockedEventAsync(user);
+    
+            return new ApiResponse<>(
+                    true,
+                    "Password changed successfully",
+                    new ChangePasswordResponse(true, user.getAttemptedCount())
+            );
+        } catch (IllegalArgumentException e) {
+            return new ApiResponse<>(false, e.getMessage(), null);
+        } catch (Exception e) {
+            logger.error("Error changing password for user with ID: {}", changePasswordRequest.getUserId(), e);
+            return new ApiResponse<>(false, "An error occurred while changing the password", null);
+        }
+    }
+    
+    private boolean isPasswordStrong(String password) {
+        // Example: Check length and at least one special character
+        return password.length() >= 8 && password.matches(".*[!@#$%^&*()].*");
+    }
+    
+    @Async
+    public void sendAccountLockedEventAsync(User user) {
+        try {
+            OtpRequestEvent accountLockedEvent = buildOtpRequestEvent(user);
+            otpKafkaProducer.sendMessage(accountLockedEvent, kafkaTopicsConfig.getProducedTopic("user.account.locked").getName());
+            logger.info("Account locked event sent to Kafka for user: {}", user.getEmail());
+        } catch (Exception e) {
+            logger.error("Failed to send account locked event to Kafka for user: {}", user.getEmail(), e);
+        }
+    }
+
     @Transactional
     @Description("Register a new user with given details.")
     public ApiResponse<UserResponse> registerUser(User user) {
@@ -183,13 +263,6 @@ public class AuthService {
                 
     }
 
-    // private OtpRequestEvent buildOtpRequestEvent(User user) {
-    //     return OtpRequestEvent.builder()
-    //             .userId(user.getUserId())
-    //             .email(user.getEmail())
-    //             .timestamp(Instant.now())
-    //             .build();
-    // }
     private OtpRequestEvent buildOtpRequestEvent(User user) {
         return new OtpRequestEvent(
             user.getUserId(),

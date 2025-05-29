@@ -51,4 +51,12 @@ public class User implements Serializable{
     @Builder.Default
     @Column(name = "attempted_count")
     private Integer attemptedCount = 0;
+
+    public void incrementAttemptedCount() {
+        this.attemptedCount++;
+    }
+
+    public void resetAttemptedCount() {
+        this.attemptedCount = 0;
+    }
 }
