@@ -1,2 +1,15 @@
-com/template/shared/App.class
+com/template/shared/api/user/event/OtpRequestEvent.class
+com/template/shared/api/user/dto/User.class
+com/template/shared/api/user/dto/UserRole.class
 com/template/shared/api/ApiResponse.class
+com/template/shared/api/user/res/BlackListTokenResponse.class
+com/template/shared/api/user/req/VerifyOtpRequest.class
+com/template/shared/builder/ResponseBuilder.class
+com/template/shared/api/user/res/OtpResponse.class
+com/template/shared/api/user/dto/UserSetting.class
+com/template/shared/api/user/res/CredentialResponse.class
+com/template/shared/api/user/res/UserResponse.class
+com/template/shared/api/user/req/LoginDtoRequest.class
+com/template/shared/api/user/res/LoginResponse.class
+com/template/shared/api/user/dto/BlacklistToken.class
+com/template/shared/App.class

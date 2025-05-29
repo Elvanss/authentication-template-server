@@ -2,7 +2,11 @@ package com.template.shared.api.user.event;
 import java.time.Instant;
 import java.util.UUID;
 
+import lombok.Data;
+
+@Data
 public class OtpRequestEvent {
+    
     private UUID userId;
     private String email;
     private Instant timestamp;
