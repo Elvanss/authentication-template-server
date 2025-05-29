@@ -1,7 +1,5 @@
 package com.auth.ms_user.service;
 
-import java.time.Instant;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Description;
@@ -17,7 +15,6 @@ import com.auth.ms_user.config.KafkaTopicsConfig;
 import com.auth.ms_user.domain.User;
 import com.auth.ms_user.domain.UserRole;
 import com.auth.ms_user.domain.UserSetting;
-import com.auth.ms_user.event.OtpRequestEvent;
 import com.auth.ms_user.exception.InvalidInputException;
 import com.auth.ms_user.mapper.UserMapper;
 import com.auth.ms_user.producer.OtpKafkaProducer;
@@ -29,6 +26,7 @@ import com.auth.ms_user.security.UserDetailsServiceImpl;
 import com.auth.ms_user.utils.constants.Role;
 import com.auth.ms_user.utils.constants.Status;
 import com.template.shared.api.ApiResponse;
+import com.template.shared.api.user.event.OtpRequestEvent;
 import com.template.shared.api.user.req.LoginDtoRequest;
 import com.template.shared.api.user.req.VerifyOtpRequest;
 import com.template.shared.api.user.res.LoginResponse;
@@ -185,12 +183,18 @@ public class AuthService {
                 
     }
 
+    // private OtpRequestEvent buildOtpRequestEvent(User user) {
+    //     return OtpRequestEvent.builder()
+    //             .userId(user.getUserId())
+    //             .email(user.getEmail())
+    //             .timestamp(Instant.now())
+    //             .build();
+    // }
     private OtpRequestEvent buildOtpRequestEvent(User user) {
-        return OtpRequestEvent.builder()
-                .userId(user.getUserId())
-                .email(user.getEmail())
-                .timestamp(Instant.now())
-                .build();
+        return new OtpRequestEvent(
+            user.getUserId(),
+            user.getEmail()
+        );
     }
 
     private boolean handleFailedAttempts(User user) {
@@ -205,10 +209,10 @@ public class AuthService {
             OtpRequestEvent accountLockedEvent = buildOtpRequestEvent(user);
             otpKafkaProducer.sendMessage(accountLockedEvent, "account-locked-events");
     
-            return true; // Account is locked
+            return true; 
         }
     
-        userRepository.save(user); // Save the updated attempt count
-        return false; // Account is not locked
+        userRepository.save(user); 
+        return false;
     }
 }
