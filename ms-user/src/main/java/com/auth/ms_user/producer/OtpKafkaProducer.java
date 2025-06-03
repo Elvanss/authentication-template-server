@@ -7,7 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
-import com.template.shared.api.user.event.OtpRequestEvent;
+import com.template.shared.api.user.event.EmailRequestEvent;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,14 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 public class OtpKafkaProducer {
 
     private final Logger logger = org.slf4j.LoggerFactory.getLogger(OtpKafkaProducer.class);
-    private final KafkaTemplate<String, OtpRequestEvent> kafkaTemplate;
+    private final KafkaTemplate<String, EmailRequestEvent> kafkaTemplate;
 
-    public OtpKafkaProducer(KafkaTemplate<String, OtpRequestEvent> kafkaTemplate) {
+    public OtpKafkaProducer(KafkaTemplate<String, EmailRequestEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendMessage(OtpRequestEvent otpRequestEvent, String topic) {
-        CompletableFuture<SendResult<String, OtpRequestEvent>> future = kafkaTemplate.send(topic, otpRequestEvent);
+    public void sendMessage(EmailRequestEvent otpRequestEvent, String topic) {
+        CompletableFuture<SendResult<String, EmailRequestEvent>> future = kafkaTemplate.send(topic, otpRequestEvent);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 logger.info("Send message=[{}] with offset=[{}]", 

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.auth.ms_notification.application.INotificationService;
 import com.auth.ms_notification.application.IOtpService;
-import com.auth.ms_notification.event.OtpRequestEvent;
+import com.template.shared.api.user.event.EmailRequestEvent;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class OtpListener {
     private final INotificationService notificationService;
 
     @KafkaListener(topics = "user.otp.requested", groupId = "notification-group")
-    public void listen(OtpRequestEvent event) {
+    public void listen(EmailRequestEvent event) {
         try {
             Integer otp = otpService.generateOtp(event.getEmail());
             notificationService.sendOtpEmail(event.getEmail(), otp);

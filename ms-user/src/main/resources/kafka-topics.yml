@@ -16,6 +16,11 @@ kafka:
         replication-factor: 1
         config:
           retention.ms: 604800000
+      - name: user.reset-password.request
+        partitions: 1
+        replication-factor: 1
+        config:
+          retention.ms: 604800000
 
     consumed:
       - name: ser.otp.requested

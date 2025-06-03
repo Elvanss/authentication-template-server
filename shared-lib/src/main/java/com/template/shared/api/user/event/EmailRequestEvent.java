@@ -5,17 +5,17 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class OtpRequestEvent {
+public class EmailRequestEvent {
     
     private UUID userId;
     private String email;
     private Instant timestamp;
 
-    public OtpRequestEvent() {
+    public EmailRequestEvent() {
         this.timestamp = Instant.now();
     }
 
-    public OtpRequestEvent(UUID userId, String email) {
+    public EmailRequestEvent(UUID userId, String email) {
         this.userId = userId;
         this.email = email;
     }

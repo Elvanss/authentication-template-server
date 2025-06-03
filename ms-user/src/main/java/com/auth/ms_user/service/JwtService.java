@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +23,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 public class JwtService {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
 
     private final KeyPair keyPair;
 
@@ -45,7 +44,7 @@ public class JwtService {
             keyPairGenerator.initialize(2048);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to generate RSA key pair", e);
         }
     }
 
@@ -58,19 +57,22 @@ public class JwtService {
     }
 
     public String generateToken(UserDetailsImpl userDetails) {
-        @SuppressWarnings("deprecation")
-        JwtBuilder jwtBuilder = Jwts.builder()
-                .subject(userDetails.getUsername())
-                .claim("authorities", userDetails.getAuthorities())
-                .signWith(getPrivateKey(), SignatureAlgorithm.RS256)
-                .expiration(new Date(System.currentTimeMillis() + expiration));
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expiration);
 
-        /*  Add custom claims
-        if (userDetails.getSemesterId() != null) {
-           builder.claim("semesterId", userDetails.getSemesterId());
-        }
-        */
-        return jwtBuilder.compact();
+        @SuppressWarnings("deprecation")
+        JwtBuilder builder = Jwts.builder()
+                .subject(userDetails.getUsername())
+                .claim("authorities", userDetails.getAuthorities().stream()
+                        .map(Object::toString).toList())
+                .claim("userId", userDetails.getUserId())
+                .claim("email", userDetails.getUsername())
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(getPrivateKey(), SignatureAlgorithm.RS256);
+                
+
+        return builder.compact();
     }
 
     private Claims getAllClaimsFromToken(String token) {
@@ -81,8 +83,29 @@ public class JwtService {
                 .getPayload();
     }
 
+    public String extractTokenFromHeader(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Authorization header is missing or invalid");
+        }
+        return authorizationHeader.substring(7).trim();
+    }
+
+    public String extractEmailFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return claims.get("email", String.class);
+    }
+
+    public UUID extractUserIdFromToken(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Claims claims = getAllClaimsFromToken(token);
+        String userIdStr = claims.get("userId", String.class);
+        return userIdStr != null ? UUID.fromString(userIdStr) : null;
+    }
+
     public boolean validateToken(String token) {
-        if (token == null || token.isEmpty()) {
+        if (token == null || token.trim().isEmpty()) {
             LOGGER.error("JWT token is null or empty");
             return false;
         }
@@ -91,8 +114,7 @@ public class JwtService {
             Jwts.parser()
                 .verifyWith(getPublicKey())
                 .build()
-                .parseSignedClaims(token);
-
+                .parseSignedClaims(token.trim());
             return true;
         } catch (MalformedJwtException e) {
             LOGGER.error("Invalid JWT token: {}", e.getMessage());
@@ -109,6 +131,6 @@ public class JwtService {
     }
 
     public String getEmailFromJwtToken(String token) {
-        return getAllClaimsFromToken(token).getSubject();
+        return getAllClaimsFromToken(token).get("email", String.class);
     }
 }

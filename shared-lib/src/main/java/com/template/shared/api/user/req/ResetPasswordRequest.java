@@ -1,29 +1,24 @@
 package com.template.shared.api.user.req;
 
-import java.util.UUID;
-
-import lombok.Data;
-
-@Data
-public class ChangePasswordRequest {
-    private String oldPassword;
+public class ResetPasswordRequest {
+    private String resetToken;
     private String newPassword;
     private String confirmPassword;
 
-    public ChangePasswordRequest() {}
+    public ResetPasswordRequest() {}
 
-    public ChangePasswordRequest(String oldPassword, String newPassword, String confirmPassword) {
-        this.oldPassword = oldPassword;
+    public ResetPasswordRequest(String resetToken, String newPassword, String confirmPassword) {
+        this.resetToken = resetToken;
         this.newPassword = newPassword;
         this.confirmPassword = confirmPassword;
     }
 
-    public String getOldPassword() {
-        return this.oldPassword;
+    public String getResetToken() {
+        return this.resetToken;
     }
 
-    public void setOldPassword(String oldPassword) {
-        this.oldPassword = oldPassword;
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
     }
 
     public String getNewPassword() {
@@ -41,5 +36,4 @@ public class ChangePasswordRequest {
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
-
 }

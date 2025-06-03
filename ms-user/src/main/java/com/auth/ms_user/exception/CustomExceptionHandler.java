@@ -1,5 +1,12 @@
 package com.auth.ms_user.exception;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,23 +20,52 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import feign.FeignException;
 
 // @ControllerAdvice
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
-    // Handling HTTP client errors from external services
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<String> handleHttpClientErrorException(HttpClientErrorException ex) {
-        return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
+    // Handling HTTP client errors from external services (Feign clients)   
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<Object> handleFeignException(FeignException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("success", false);
+        body.put("status", ex.status());
+        body.put("message", ex.getMessage());
+        body.put("details", ex.contentUTF8());
+        return new ResponseEntity<>(body, HttpStatus.valueOf(ex.status()));
     }
 
-    // Handling HTTP server errors from external services
+    // Handling HTTP client errors from external services (Rest Template)
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("success", false);
+        body.put("status", ex.getStatusCode().value());
+        body.put("message", ex.getStatusText());
+        body.put("details", ex.getResponseBodyAsString());
+        return new ResponseEntity<>(body, ex.getStatusCode());
+    }
+    
     @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<String> handleHttpServerErrorException(HttpServerErrorException ex) {
-        return ResponseEntity.status(ex.getStatusCode()).body(ex.getResponseBodyAsString());
+    public ResponseEntity<Object> handleHttpServerErrorException(HttpServerErrorException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("success", false);
+        body.put("status", ex.getStatusCode().value());
+        body.put("message", ex.getStatusText());
+        body.put("details", ex.getResponseBodyAsString());
+        return new ResponseEntity<>(body, ex.getStatusCode());
+    }
+    
+    @ExceptionHandler(AccountLockedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<Object> handleAccountLockedException(AccountLockedException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("success", false);
+        body.put("status", HttpStatus.FORBIDDEN.value());
+        body.put("message", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
 
     // Service exception handler
@@ -72,6 +108,7 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleDataAccessException(DataAccessException ex) {
         Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
         body.put("success", false);
         body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         body.put("message", ex.getMessage());
@@ -83,6 +120,7 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleInvalidInputException(InvalidInputException ex) {
         Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
         body.put("success", false);
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("message", ex.getMessage());
@@ -101,6 +139,7 @@ public class CustomExceptionHandler {
             map.put(key, val);
         });
         Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
         body.put("success", false);
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("message", "Provided arguments are invalid, see data for details.");

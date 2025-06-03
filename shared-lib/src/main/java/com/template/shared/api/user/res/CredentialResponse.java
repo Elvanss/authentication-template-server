@@ -1,11 +1,11 @@
 package com.template.shared.api.user.res;
 
-import com.template.shared.api.user.event.OtpRequestEvent;
+import com.template.shared.api.user.event.EmailRequestEvent;
 
 public class CredentialResponse {
     private boolean flag;
     private String message;
-    private OtpRequestEvent otpRequestEvent;
+    private EmailRequestEvent otpRequestEvent;
 
 
     public boolean isFlag() {
@@ -28,11 +28,11 @@ public class CredentialResponse {
         this.message = message;
     }
 
-    public OtpRequestEvent getOtpRequestEvent() {
+    public EmailRequestEvent getOtpRequestEvent() {
         return this.otpRequestEvent;
     }
 
-    public void setOtpRequestEvent(OtpRequestEvent otpRequestEvent) {
+    public void setOtpRequestEvent(EmailRequestEvent otpRequestEvent) {
         this.otpRequestEvent = otpRequestEvent;
     }
 

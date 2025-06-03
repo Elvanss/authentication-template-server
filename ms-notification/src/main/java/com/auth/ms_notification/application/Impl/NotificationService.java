@@ -16,10 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NotificationServiceImpl implements INotificationService {
+public class NotificationService implements INotificationService {
 
     private final JavaMailSender javaMailSender;
-    private final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(NotificationService.class);
 
     @Override
     @Async
@@ -61,6 +61,29 @@ public class NotificationServiceImpl implements INotificationService {
             logger.info("Account locked email sent successfully to {}", email);
         } catch (MailException e) {
             logger.error("Failed to send account locked email to {}: {}", email, e.getMessage(), e);
+        }
+    }
+
+    
+    @Override
+    @Async
+    /**
+     * Sends a password reset email to the user with a reset token.
+     *
+     * @param email The email address of the user requesting a password reset.
+     * @param resetToken The token used for resetting the password.
+     */
+    public void sendResetPasswordEmail(String email, String resetToken) {
+        try {
+            logger.info("Sending password reset email to {}", email);
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("Password Reset Request");
+            message.setText("To reset your password, please use the following token: " + resetToken + ". This token is valid for 15 minutes.");
+            javaMailSender.send(message);
+            logger.info("Password reset email sent successfully to {}", email);
+        } catch (MailException e) {
+            logger.error("Failed to send password reset email to {}: {}", email, e.getMessage(), e);
         }
     }
 }

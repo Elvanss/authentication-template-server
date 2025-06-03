@@ -13,6 +13,7 @@ public class UserMapper {
         userDto.setEmail(user.getEmail());
         userDto.setDateOfBirth(user.getDateOfBirth());
         userDto.setProfileImage(user.getProfileImage());
+        userDto.setAttemptedCount(user.getAttemptedCount());
         return userDto;
     }
 }

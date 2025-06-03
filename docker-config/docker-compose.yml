@@ -34,6 +34,7 @@ services:
     ports:
       - "6379:6379"
     command: ["redis-server", "--appendonly", "yes"]
+    # command: ["redis-server", "--appendonly", "yes", "--save", "900", "1", "--save", "300", "10"] # In Production
     env_file:
       - ./env/redis.env
 

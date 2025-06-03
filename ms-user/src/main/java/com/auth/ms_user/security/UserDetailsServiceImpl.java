@@ -28,20 +28,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Debug time console
-        long start = System.currentTimeMillis();
-
         // Find user by email
         User user = this.userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-
-        // Debug time console
-        long end = System.currentTimeMillis();
-
-        // Debug time console
-        System.out.println("Database start at: " + start);
-        System.out.println("Database end at: " + end);
-        System.out.println("Database query time with ms: " +  (end - start));
 
         return UserDetailsImpl.build(user, userRoleRepository);
     }

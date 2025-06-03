@@ -5,4 +5,5 @@ CREATE TABLE "users" (
     password VARCHAR(255) NOT NULL,
     data_of_birth DATE,
     profile_image BYTEA
+    
 );
